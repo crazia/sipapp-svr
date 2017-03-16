@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Auth {
-  private static final String REALM = "comjukc.com" ;
+  private static final String REALM = "crazia.org" ;
   private static final String ALGORITHM  = "MD5" ;
   
   public enum KEY {
