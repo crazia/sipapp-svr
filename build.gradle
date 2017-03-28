@@ -1,8 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'war'
 
 group = 'com.comjuck.sipapp'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 
 description = """my-sipapp Maven SipApp"""
 
