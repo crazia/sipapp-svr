@@ -4,4 +4,13 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+
+		<servlet-name>HelloSipWorld</servlet-name>
+		<servlet-class>
+			com.comjuck.sipapp.HelloSipWorld
+		</servlet-class>
+  </servlet>
+
 </web-app>
+

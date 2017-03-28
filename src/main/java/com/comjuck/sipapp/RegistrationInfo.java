@@ -2,6 +2,9 @@ package com.comjuck.sipapp;
 
 import java.util.Date;
 import javax.servlet.sip.URI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 public class RegistrationInfo {
   private	URI		aor					= null;
@@ -19,7 +22,7 @@ public class RegistrationInfo {
 	private String	location			= null;
 	private Date	registrationDTime	= null;
 
-
+  private static Log logger = LogFactory.getLog(RegistrationInfo.class);
 
   	public	RegistrationInfo	(
 									URI	_aor, 
@@ -54,12 +57,21 @@ public class RegistrationInfo {
 		this.location			= _location;
 		this.registrationDTime	= _registrationDTime;
 
-		if	(this.aor == null)
+    logger.info("processing 1");
+
+		if	(this.aor == null) {
+      logger.info("AOR AOR cannot be null as this is a key.");
 			throw new IllegalRegistrationException("AOR cannot be null as this is a key.");
+    }
 
-		if	(this.contact == null)
+    logger.info("processing 2");
+
+		if	(this.contact == null) {
+      logger.info("Contact cannot be null as this is a key.");
 			throw new IllegalRegistrationException("Contact cannot be null.");
+    }
 
+    logger.info("processing 3");
 		if	(this.guid == null)
 			this.guid			= "";
 		
@@ -68,9 +80,13 @@ public class RegistrationInfo {
 
 		if	(this.displayName == null)
 			this.displayName	= "";
-		
+
+    logger.info("processing 4");		
+
 		if	(this.expires < 0)
 			this.expires		= WebEnv.getDefaultExpires();
+
+    logger.info("processing 5");		
 	}
 
 public String toString	()

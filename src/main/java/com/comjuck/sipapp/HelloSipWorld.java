@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.Properties;
+
 import javax.annotation.Resource;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -34,6 +36,9 @@ import javax.servlet.sip.SipServletResponse;
 import javax.servlet.sip.SipSession;
 import javax.servlet.sip.UAMode;
 import javax.servlet.sip.URI;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,9 +54,7 @@ public class HelloSipWorld extends SipServlet {
 	private static Log logger = LogFactory.getLog(HelloSipWorld.class);
 
   public static final String	REMOTE_URI			= "REMOTE_URI";
-
-  @Resource
-	SipFactory		sf;
+	private SipFactory sipFactory;
   
 	
 	@Override
@@ -59,12 +62,24 @@ public class HelloSipWorld extends SipServlet {
 		logger.info("the HelloSipWorld servlet has been started");
 
 		super.init(servletConfig);
+
+    try {
+      // Getting the Sip factory from the JNDI Context
+			Properties jndiProps = new Properties();			
+			Context initCtx = new InitialContext(jndiProps);
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			sipFactory = (SipFactory) envCtx.lookup("sip/com.comjuck.sipapp.HelloSipWorldApplication/SipFactory");
+			logger.info("Sip Factory ref from JNDI : " + sipFactory);
+    } catch (NamingException e) {
+      throw new ServletException("Uh oh -- JNDI problem !", e);
+    }
+    
 	}
 
   @Override
   protected void doRegister(SipServletRequest request) throws ServletException, IOException
   {
-    logger.debug("doRegister() invoked");
+    logger.info("doRegister() invoked");
 
     String authorization = request.getHeader(Constants.SH_AUTHORIZATION);
     if (Auth.isValidAuthorization(authorization) == false) {
@@ -95,6 +110,8 @@ public class HelloSipWorld extends SipServlet {
             response.send();
           } else {
             SipUtil sipUtil	= new SipUtil();
+
+            logger.info("Before Registration");
             RegistrationInfo registrationInfo	= new RegistrationInfo	(
 																							aor,
 																							contact,
@@ -112,6 +129,7 @@ public class HelloSipWorld extends SipServlet {
 																							new Date()
 																						);
 
+            logger.info("ended Registration ");
             handler.addRegistrationInfo(WebEnv.getJedisPool(), registrationInfo);
             logger.info("-- RegistrationInfo Stored --");
             logger.info(registrationInfo.toString());
@@ -130,9 +148,11 @@ public class HelloSipWorld extends SipServlet {
         }
 
       } catch (Exception ex) {
+        logger.info("log? "+ ex.getMessage());
         SipServletResponse response	= request.createResponse(SipServletResponse.SC_SERVER_INTERNAL_ERROR, ex.getMessage());
 					response.send();
-					logger.info("500 Internal Server Error response sent.");        
+          
+					logger.info("500 Internal Server Error response sent." + ex.getMessage());        
       }
     }
     // else {
@@ -182,12 +202,12 @@ public class HelloSipWorld extends SipServlet {
     RegistrationInfoHandler handler	= new RegistrationInfoHandler();
 		B2buaHelper b2b	= request.getB2buaHelper();
 		URI aorOfCaller	= request.getFrom().getURI();
-		Vector<URI> remoteUrisOfCaller	= handler.getRemoteUris(sf, WebEnv.getJedisPool(), aorOfCaller);
+		Vector<URI> remoteUrisOfCaller	= handler.getRemoteUris(sipFactory, WebEnv.getJedisPool(), aorOfCaller);
 		request.getSession().setAttribute(REMOTE_URI, remoteUrisOfCaller.get(0));
 
     if (request.isInitial()) {
       URI aorOfCallee	= request.getTo().getURI();
-			Vector<URI> remoteUrisOfCallee	= handler.getRemoteUris(sf, WebEnv.getJedisPool(), aorOfCallee);
+			Vector<URI> remoteUrisOfCallee	= handler.getRemoteUris(sipFactory, WebEnv.getJedisPool(), aorOfCallee);
 
 
       if	(remoteUrisOfCallee.size() > 0){

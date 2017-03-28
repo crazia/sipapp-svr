@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.comjuck.sipapp'
+version = '1.0-SNAPSHOT'
+
+description = """my-sipapp Maven SipApp"""
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+
+
+repositories {
+        
+     maven { url "https://oss.sonatype.org/content/groups/public" }
+     maven { url "https://repository.jboss.org/nexus/content/groups/public/" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'redis.clients', name: 'jedis', version:'2.1.0'
+    testCompile group: 'junit', name: 'junit', version:'3.8.1'
+    compile group: 'log4j', name: 'log4j', version:'1.2.14'
+    compile group: 'commons-logging', name: 'commons-logging-api', version:'1.0.4'
+    compile group: 'javax.servlet', name: 'servlet-api', version:'2.5'
+    compile group: 'org.mobicents.servlet.sip', name: 'sip-servlets-spec', version:'1.7.0.FINAL'
+}
