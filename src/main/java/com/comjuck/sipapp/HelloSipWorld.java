@@ -165,6 +165,9 @@ public class HelloSipWorld extends SipServlet {
 
   @Override
   protected void doAck(SipServletRequest request) throws ServletException, IOException {
+
+    logger.info("=============== ACK processing ======================");
+
     B2buaHelper b2b = request.getB2buaHelper();
     SipSession sipSession = b2b.getLinkedSession(request.getSession());
     List<SipServletMessage> msgs = b2b.getPendingMessages(sipSession, UAMode.UAC);
@@ -198,7 +201,7 @@ public class HelloSipWorld extends SipServlet {
 		// SipServletResponse sipServletResponse = request.createResponse(SipServletResponse.SC_OK);
 		// sipServletResponse.send();
 
-
+    logger.info("========= INVITE processing ============");
     RegistrationInfoHandler handler	= new RegistrationInfoHandler();
 		B2buaHelper b2b	= request.getB2buaHelper();
 		URI aorOfCaller	= request.getFrom().getURI();
@@ -300,6 +303,7 @@ public class HelloSipWorld extends SipServlet {
   @Override
 	protected void doResponse(SipServletResponse response) throws ServletException, IOException 
 	{
+    logger.info("=============== do Response ============= ");
 		if (response.getStatus() == SipServletResponse.SC_REQUEST_TERMINATED) {
 			return; // 487 already sent on Cancel for initial leg UAS
 		}
